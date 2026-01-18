@@ -1,0 +1,16 @@
+numpy>=2.0.0
+torch>=2.5.0
+pydantic>=2
+sentencepiece>=0.2.1
+beartype>=0.22.5
+safetensors>=0.4.0
+typer>=0.10.0
+typing_extensions>=4.0.0
+fastapi>=0.100
+uvicorn>=0.13.0
+python-multipart>=0.0.21
+scipy>=1.5.0
+einops>=0.4.0
+huggingface_hub>=0.10
+requests>=2.20.0
+pocket-tts

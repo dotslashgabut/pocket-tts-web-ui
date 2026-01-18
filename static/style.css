@@ -1,0 +1,550 @@
+:root {
+    --bg-color: #0d1117;
+    --card-bg: #161b22;
+    --primary: #58a6ff;
+    --primary-hover: #79c0ff;
+    --text-main: #c9d1d9;
+    --text-muted: #8b949e;
+    --border: #30363d;
+    --accent: #238636;
+    --error: #da3633;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    /* Prevent body scroll */
+}
+
+/* Full screen container */
+.container {
+    width: 100%;
+    height: 100%;
+    background: var(--bg-color);
+    border-radius: 0;
+    padding: 1.5rem;
+    /* Relaxed from 1rem */
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    /* Relaxed from 0.75rem */
+    box-shadow: none;
+    border: none;
+    max-width: none;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 0;
+    /* Header is compact */
+    flex-shrink: 0;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.logo svg {
+    width: 24px;
+    /* Reduced from 28px */
+    height: 24px;
+}
+
+h1 {
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.badge {
+    font-size: 0.75rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    background: var(--border);
+    color: var(--text-muted);
+}
+
+.badge.ready {
+    background: rgba(35, 134, 54, 0.2);
+    color: #3fb950;
+    border: 1px solid rgba(35, 134, 54, 0.4);
+}
+
+.badge.loading {
+    border: 1px solid var(--border);
+}
+
+.badge.error {
+    background: rgba(218, 54, 51, 0.2);
+    color: #f85149;
+    border: 1px solid rgba(218, 54, 51, 0.4);
+}
+
+/* Main Layout */
+main {
+    display: flex;
+    flex: 1;
+    /* Fill remaining height */
+    gap: 1.25rem;
+    /* Relaxed from 0.75rem */
+    min-height: 0;
+    /* Critical for scrolling children */
+}
+
+.pane {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Left Pane: Input */
+.main-pane {
+    flex: 1;
+    min-width: 0;
+}
+
+.input-section {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.input-section textarea {
+    flex: 1;
+    /* Take all available height */
+    width: 100%;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    /* Slightly smaller radius */
+    padding: 1rem;
+    /* Reduced from 1.5rem */
+    color: var(--text-main);
+    font-family: inherit;
+    font-size: 1.1rem;
+    /* Reduced from 1.25rem */
+    line-height: 1.6;
+    resize: none;
+    /* Disable manual resize */
+    transition: border-color 0.2s;
+}
+
+.input-section textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+/* Right Pane: Sidebar */
+.sidebar-pane {
+    width: 320px;
+    /* Reduced from 360px */
+    gap: 0.5rem;
+    /* Reduced from 0.75rem */
+    overflow-y: auto;
+    /* Allow scrolling if sidebar is tall */
+    padding-right: 2px;
+    /* For scrollbar space */
+    flex-shrink: 0;
+}
+
+/* Custom Scrollbar for Sidebar */
+.sidebar-pane::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar-pane::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.sidebar-pane::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 3px;
+}
+
+label {
+    display: block;
+    font-size: 0.75rem;
+    /* Slightly smaller label */
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 0.25rem;
+    /* Reduced from 0.5rem */
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Voice Grid */
+.voice-grid-wrapper {
+    /* max-height: 200px;  Removed max-height to let it flow naturally in the sidebar */
+    margin-bottom: 0.5rem;
+    /* Reduced margin */
+}
+
+.voice-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 0.5rem;
+    margin-bottom: 0;
+    /* Remove internal margin */
+}
+
+.voice-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.4rem;
+    /* Reduced from 0.5rem */
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+    font-size: 0.9rem;
+}
+
+.voice-card:hover {
+    border-color: var(--text-muted);
+}
+
+.voice-card.selected {
+    background: rgba(88, 166, 255, 0.15);
+    border-color: var(--primary);
+    color: var(--primary);
+    font-weight: 500;
+}
+
+.file-upload {
+    position: relative;
+    border: 1px dashed var(--border);
+    border-radius: 6px;
+    padding: 0.75rem;
+    /* Reduced from 1rem */
+    text-align: center;
+    cursor: pointer;
+    background: var(--card-bg);
+    transition: all 0.2s;
+    font-size: 0.9rem;
+}
+
+.file-upload:hover {
+    border-color: var(--primary);
+    background: rgba(88, 166, 255, 0.05);
+}
+
+.file-upload input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.primary-btn {
+    width: 100%;
+    background: var(--primary);
+    color: #0d1117;
+    border: none;
+    border-radius: 6px;
+    padding: 0.75rem;
+    /* Reduced from 1rem */
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.primary-btn:hover {
+    background: var(--primary-hover);
+}
+
+.primary-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.loader {
+    display: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(0, 0, 0, 0.3);
+    border-radius: 50%;
+    border-top-color: #000;
+    animation: spin 1s ease-in-out infinite;
+    margin-left: 8px;
+}
+
+.primary-btn.loading .loader {
+    display: block;
+}
+
+.primary-btn.loading .btn-text {
+    display: none;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Result Section */
+.result-section {
+    display: none;
+    background: var(--card-bg);
+    padding: 0.75rem;
+    /* Reduced from 1rem */
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    animation: fadeIn 0.3s ease-out;
+}
+
+.result-section.show {
+    display: block;
+}
+
+audio {
+    width: 100%;
+    height: 48px;
+    border-radius: 8px;
+    outline: none;
+}
+
+audio::-webkit-media-controls-panel {
+    background-color: #f0f6fc;
+    border-radius: 8px;
+    border: 1px solid var(--primary);
+}
+
+audio::-webkit-media-controls-enclosure {
+    border-radius: 8px;
+}
+
+.download-wrapper {
+    margin-top: 0.75rem;
+    display: flex;
+    justify-content: center;
+}
+
+.secondary-btn {
+    text-decoration: none;
+    background: transparent;
+    color: var(--primary);
+    border: 1px solid var(--primary);
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.secondary-btn:hover {
+    background: rgba(88, 166, 255, 0.1);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Large Screens */
+@media (min-width: 1440px) {
+    .container {
+        padding: 3rem 5rem;
+        /* Significant breathing room on large displays */
+        max-width: 1920px;
+        /* Optional cap */
+        margin: 0 auto;
+    }
+
+    main {
+        gap: 3rem;
+        /* More separation between input and sidebar */
+    }
+
+    .input-section textarea {
+        font-size: 1.5rem;
+        /* Scale font up slightly for large screens */
+        padding: 2rem;
+    }
+}
+
+/* ================= Mobile / Responsive ================= */
+@media (max-width: 850px) {
+    .container {
+        padding: 1.5rem;
+        /* Increased from 1rem */
+        padding-bottom: 5rem;
+        /* Extra padding at bottom for mobile scrolling */
+        height: auto;
+        min-height: 100vh;
+        overflow: auto;
+        /* Scroll body on mobile */
+    }
+
+    body {
+        overflow: auto;
+        height: auto;
+    }
+
+    main {
+        flex-direction: column;
+        gap: 2rem;
+        /* Increased from 1.5rem for better separation on mobile */
+        margin-bottom: 2rem;
+        /* Ensure space at the end */
+    }
+
+    .sidebar-pane {
+        width: 100%;
+        overflow: visible;
+        flex: none;
+        gap: 1.5rem;
+        /* Increased from 1.25rem for touch */
+        /* slightly larger gap on mobile for touch targets */
+    }
+
+    .input-section textarea {
+        min-height: 200px;
+        /* prevent it being too small */
+    }
+
+    .voice-grid {
+        grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+    }
+}
+
+/* Speed Control */
+.speed-selector {
+    margin-bottom: 1.5rem;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem;
+    /* Reduced from 1rem */
+}
+
+.speed-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.speed-header label {
+    margin-bottom: 0;
+}
+
+#speed-value {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--primary);
+    background: rgba(88, 166, 255, 0.1);
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+input[type=range] {
+    width: 100%;
+    -webkit-appearance: none;
+    background: transparent;
+}
+
+input[type=range]:focus {
+    outline: none;
+}
+
+/* Slider Track */
+input[type=range]::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 6px;
+    cursor: pointer;
+    background: var(--border);
+    border-radius: 3px;
+}
+
+input[type=range]::-moz-range-track {
+    width: 100%;
+    height: 6px;
+    cursor: pointer;
+    background: var(--border);
+    border-radius: 3px;
+}
+
+/* Slider Thumb */
+input[type=range]::-webkit-slider-thumb {
+    height: 18px;
+    width: 18px;
+    border-radius: 50%;
+    background: var(--primary);
+    cursor: pointer;
+    -webkit-appearance: none;
+    margin-top: -6px;
+    /* center thumb on track */
+    box-shadow: 0 0 0 2px var(--bg-color);
+    /* separation border */
+}
+
+input[type=range]::-moz-range-thumb {
+    height: 18px;
+    width: 18px;
+    border: none;
+    border-radius: 50%;
+    background: var(--primary);
+    cursor: pointer;
+    box-shadow: 0 0 0 2px var(--bg-color);
+}
+
+input[type=range]:hover::-webkit-slider-thumb {
+    background: var(--primary-hover);
+    transform: scale(1.1);
+    transition: transform 0.1s;
+}
+
+.url-input {
+    width: 100%;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.8rem;
+    color: var(--text-main);
+    font-family: inherit;
+    font-size: 0.9rem;
+    margin-top: 10px;
+}
+
+.url-input:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+.url-input {
+    padding: 0.6rem;
+    font-size: 0.8rem;
+    margin-top: 5px;
+}
