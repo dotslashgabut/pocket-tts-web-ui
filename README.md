@@ -2,7 +2,7 @@
 
 A modern, offline-capable Web UI for [Kyutai's Pocket TTS](https://github.com/kyutai-labs/pocket-tts). This application allows you to generate high-quality text-to-speech completely locally on your CPU.
 
-![Preview](https://github.com/kyutai-labs/pocket-tts/raw/main/assets/pocket-tts-banner.jpg)
+![pocket-tts-web-ui](screenshot.png)
 
 ## Features
 
