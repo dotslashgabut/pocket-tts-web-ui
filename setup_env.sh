@@ -1,10 +1,7 @@
 #!/bin/bash
 echo "Setting up Virtual Environment..."
 
-if [ ! -d "pocket-tts-src" ]; then
-    echo "Cloning pocket-tts repository..."
-    git clone https://github.com/kyutai-labs/pocket-tts pocket-tts-src
-fi
+
 
 if [ ! -d "venv" ]; then
     echo "Creating venv..."

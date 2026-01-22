@@ -10,6 +10,7 @@ A modern, offline-capable Web UI for [Kyutai's Pocket TTS](https://github.com/ky
 *   **Modern UI**: Sleek, dark-mode interface with responsive design.
 *   **Real-time Streaming**: Listen to audio as it's being generated.
 *   **Speech Speed Control**: Adjust playback speed from 0.5x to 2.0x.
+*   **Advanced Controls**: Customize generation with Temperature and LSD Step settings.
 *   **Voice Cloning**: Clone voices from any audio file (requires restricted model).
 *   **Cross-Platform**: Scripts included for Windows, Linux, and macOS.
 
@@ -42,16 +43,11 @@ chmod +x setup_env.sh
     cd pocket-tts-web-ui
     ```
 
-2.  **Clone Pocket TTS source**:
-    ```bash
-    git clone https://github.com/kyutai-labs/pocket-tts pocket-tts-src
-    ```
-
-3.  **Create and Activate venv (Optional but recommended)**:
+2.  **Create and Activate venv (Optional but recommended)**:
     *   Windows: `python -m venv venv` then `venv\Scripts\activate`
     *   Linux/Mac: `python3 -m venv venv` then `source venv/bin/activate`
 
-4.  **Install dependencies**:
+3.  **Install dependencies**:
     ```bash
     pip install -r requirements.txt
     ```

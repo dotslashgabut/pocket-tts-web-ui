@@ -1,10 +1,7 @@
 @echo off
 echo Setting up Virtual Environment...
 
-if not exist "pocket-tts-src" (
-    echo Cloning pocket-tts repository...
-    git clone https://github.com/kyutai-labs/pocket-tts pocket-tts-src
-)
+
 
 if not exist "venv" (
     echo Creating venv...
