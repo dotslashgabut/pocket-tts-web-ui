@@ -34,7 +34,7 @@ ENV/
 .vscode/
 
 # Project Specific
-pocket-tts-src/
+# pocket-tts-src/
 test/
 models/
 *.wav
