@@ -172,13 +172,41 @@ document.addEventListener('DOMContentLoaded', async () => {
         seedInput.value = randomSeed;
     });
 
+    const stopBtn = document.getElementById('stop-btn');
+    let abortController = null;
+
+    // Stop Button
+    stopBtn.addEventListener('click', async () => {
+        if (abortController) {
+            abortController.abort();
+            abortController = null;
+        }
+
+        // Notify server
+        try {
+            await fetch(`${API_BASE}/stop`, { method: 'POST' });
+        } catch (e) {
+            console.error("Failed to notify stop", e);
+        }
+
+        resetUI();
+    });
+
+    function resetUI() {
+        generateBtn.classList.remove('loading');
+        generateBtn.style.display = '';
+        generateBtn.disabled = false;
+        stopBtn.style.display = 'none';
+    }
+
     // Generate
     generateBtn.addEventListener('click', async () => {
         const text = textInput.value.trim();
         if (!text) return;
 
         generateBtn.classList.add('loading');
-        generateBtn.disabled = true;
+        generateBtn.style.display = 'none'; // Hide generate button
+        stopBtn.style.display = 'inline-block'; // Show stop button
 
         resultSection.classList.remove('show');
         audioPlayer.pause();
@@ -202,10 +230,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         formData.append('temperature', tempInput.value);
         formData.append('lsd_steps', lsdInput.value);
 
+        abortController = new AbortController();
+
         try {
             const res = await fetch(`${API_BASE}/generate`, {
                 method: 'POST',
-                body: formData
+                body: formData,
+                signal: abortController.signal
             });
 
             if (!res.ok) throw new Error(await res.text());
@@ -227,10 +258,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             audioPlayer.play();
 
         } catch (e) {
-            alert("Error generating speech: " + e.message);
+            if (e.name === 'AbortError') {
+                console.log("Generation stopped by user");
+            } else {
+                alert("Error generating speech: " + e.message);
+            }
         } finally {
-            generateBtn.classList.remove('loading');
-            generateBtn.disabled = false;
+            resetUI();
+            abortController = null;
         }
     });
 

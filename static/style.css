@@ -278,6 +278,36 @@ label {
     cursor: not-allowed;
 }
 
+.primary-btn.stop-mode {
+    background-color: var(--error);
+    color: white;
+    animation: pulse-red 1.5s infinite;
+}
+
+.primary-btn.stop-mode:hover {
+    background-color: #b92b28;
+    /* darker red, though animation might override exacts */
+}
+
+/* Removed loader specific styles for stop-mode since we removed the element */
+
+@keyframes pulse-red {
+    0% {
+        box-shadow: 0 0 0 0 rgba(218, 54, 51, 0.7);
+        filter: brightness(1);
+    }
+
+    50% {
+        box-shadow: 0 0 0 6px rgba(218, 54, 51, 0);
+        filter: brightness(1.2);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(218, 54, 51, 0);
+        filter: brightness(1);
+    }
+}
+
 .loader {
     display: none;
     width: 18px;

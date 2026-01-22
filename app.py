@@ -17,6 +17,10 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 import torch
 import uvicorn
+import threading
+
+# Global control flags
+abort_event = threading.Event()
 
 # Pocket TTS imports
 import pocket_tts
@@ -161,6 +165,12 @@ def iter_audio(q):
             break
         yield data
 
+@app.post("/api/stop")
+async def stop_generation():
+    print("Stop request received")
+    abort_event.set()
+    return {"status": "stopped"}
+
 @app.post("/api/generate")
 async def generate(
     text: str = Form(...),
@@ -175,6 +185,7 @@ async def generate(
         raise HTTPException(status_code=503, detail="Model not loaded")
     
     model_state = None
+    abort_event.clear()
     
     # Determine voice
     if file or url:
@@ -289,6 +300,9 @@ async def generate(
                 kwargs["lsd_decode_steps"] = lsd_steps
 
             for chunk in tts_model.generate_audio_stream(**kwargs):
+                if abort_event.is_set():
+                    print("Generation aborted by user")
+                    return
                 chunks.append(chunk)
             
             print(f"Generated {len(chunks)} chunks.")
