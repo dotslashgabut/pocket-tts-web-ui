@@ -472,6 +472,7 @@ audio::-webkit-media-controls-enclosure {
 input[type=range] {
     width: 100%;
     -webkit-appearance: none;
+    appearance: none;
     background: transparent;
 }
 
@@ -547,4 +548,74 @@ input[type=range]:hover::-webkit-slider-thumb {
     padding: 0.6rem;
     font-size: 0.8rem;
     margin-top: 5px;
+}
+
+/* Advanced Options */
+.advanced-options {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.5rem;
+    margin-top: 1rem;
+}
+
+.advanced-options summary {
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    user-select: none;
+    padding: 0.25rem;
+    outline: none;
+}
+
+.advanced-options summary:hover {
+    color: var(--primary);
+}
+
+.advanced-grid {
+    padding: 0.75rem 0.25rem 0.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    border-top: 1px solid var(--border);
+    margin-top: 0.5rem;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.slider-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.slider-header span {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--primary);
+    background: rgba(88, 166, 255, 0.1);
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+/* Number Input */
+input[type=number] {
+    width: 100%;
+    background: var(--bg-color);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.5rem;
+    color: var(--text-main);
+    font-family: inherit;
+    font-size: 0.9rem;
+}
+
+input[type=number]:focus {
+    outline: none;
+    border-color: var(--primary);
 }

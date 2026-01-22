@@ -8,7 +8,8 @@ from pathlib import Path
 from contextlib import asynccontextmanager
 from typing import Optional
 
-# sys.path.append(str(Path(__file__).parent / "pocket-tts-src")) # Removed to use pip package
+# Add local source to path for offline usage
+sys.path.insert(0, str(Path(__file__).parent / "pocket-tts-src"))
 
 from fastapi import FastAPI, HTTPException, UploadFile, File, Form
 from fastapi.responses import StreamingResponse, FileResponse
@@ -18,7 +19,7 @@ import torch
 import uvicorn
 
 # Pocket TTS imports
-import pocket_tts # Added for config path resolution
+import pocket_tts
 from pocket_tts.models.tts_model import TTSModel
 from pocket_tts.utils.config import load_config
 from pocket_tts.utils.utils import PREDEFINED_VOICES
@@ -28,7 +29,8 @@ from pocket_tts.default_parameters import (
     DEFAULT_LSD_DECODE_STEPS,
     DEFAULT_NOISE_CLAMP,
     DEFAULT_EOS_THRESHOLD,
-    DEFAULT_AUDIO_PROMPT
+    DEFAULT_AUDIO_PROMPT,
+    DEFAULT_VARIANT
 )
 from pocket_tts.data.audio import stream_audio_chunks
 
@@ -43,16 +45,59 @@ async def lifespan(app: FastAPI):
     
     print("Initializing Pocket TTS Web UI...")
     
-    print("Loading Model... using standard load_model")
+    print("Loading Model... using local offline models if available")
     try:
-        from pocket_tts.default_parameters import DEFAULT_VARIANT
-        tts_model = TTSModel.load_model(DEFAULT_VARIANT)
+        # Load config
+        config_path = Path(pocket_tts.__file__).parent / f"config/{DEFAULT_VARIANT}.yaml"
+        print(f"Loading config from {config_path}")
+        config = load_config(config_path)
+
+        # Override with local paths
+        weights_path = MODELS_DIR / "tts_b6369a24.safetensors"
+        if weights_path.exists():
+            print(f"Found local weights: {weights_path}")
+            config.weights_path = str(weights_path)
+        else:
+            print(f"Local weights not found at {weights_path}, using config default (might download)")
+
+        weights_no_vc = MODELS_DIR / "tts_b6369a24_no_vc.safetensors"
+        if weights_no_vc.exists():
+            print(f"Found local no-VC weights: {weights_no_vc}")
+            config.weights_path_without_voice_cloning = str(weights_no_vc)
+
+        tokenizer_path = MODELS_DIR / "tokenizer.model"
+        if tokenizer_path.exists():
+            print(f"Found local tokenizer: {tokenizer_path}")
+            config.flow_lm.lookup_table.tokenizer_path = str(tokenizer_path)
+
+        # Patch PREDEFINED_VOICES to use local files if available
+        voices_dir = MODELS_DIR / "embeddings"
+        if voices_dir.exists():
+            print(f"Checking for local voices in {voices_dir}")
+            local_voices_count = 0
+            for name in utils_module._voices_names:
+                 voice_path = voices_dir / f"{name}.safetensors"
+                 if voice_path.exists():
+                     utils_module.PREDEFINED_VOICES[name] = str(voice_path)
+                     local_voices_count += 1
+            if local_voices_count > 0:
+                print(f"Updated {local_voices_count} voices to use local files")
+
+        # Load model using the modified config
+        tts_model = TTSModel._from_pydantic_config_with_weights(
+            config,
+            DEFAULT_TEMPERATURE,
+            DEFAULT_LSD_DECODE_STEPS,
+            DEFAULT_NOISE_CLAMP,
+            DEFAULT_EOS_THRESHOLD
+        )
         # tts_model.to("cpu")
         print("Model Loaded Successfully!")
         
     except Exception as e:
         print(f"Failed to load model: {e}")
-        # We don't crash here so the UI can at least show an error
+        import traceback
+        traceback.print_exc()
     
     yield
     
@@ -121,7 +166,10 @@ async def generate(
     text: str = Form(...),
     voice: Optional[str] = Form(None),
     file: Optional[UploadFile] = File(None),
-    url: Optional[str] = Form(None)
+    url: Optional[str] = Form(None),
+    seed: Optional[int] = Form(None),
+    temperature: Optional[float] = Form(None),
+    lsd_steps: Optional[int] = Form(None)
 ):
     if not tts_model:
         raise HTTPException(status_code=503, detail="Model not loaded")
@@ -221,14 +269,26 @@ async def generate(
     
     output_buffer = io.BytesIO()
     
-    def generate_to_buffer(model_state, text, buffer):
+    def generate_to_buffer(model_state, text, buffer, seed, temperature, lsd_steps):
         try:
+            if seed is not None:
+                print(f"Setting seed to: {seed}")
+                torch.manual_seed(seed)
+
             # Generate all chunks
             chunks = []
             print(f"Generating for: {text[:20]}...")
-            for chunk in tts_model.generate_audio_stream(
-                model_state=model_state, text_to_generate=text
-            ):
+            
+            kwargs = {
+                "model_state": model_state,
+                "text_to_generate": text
+            }
+            if temperature is not None:
+                kwargs["temperature"] = temperature
+            if lsd_steps is not None:
+                kwargs["lsd_decode_steps"] = lsd_steps
+
+            for chunk in tts_model.generate_audio_stream(**kwargs):
                 chunks.append(chunk)
             
             print(f"Generated {len(chunks)} chunks.")
@@ -254,7 +314,7 @@ async def generate(
 
     # Run in thread
     import asyncio
-    await asyncio.to_thread(generate_to_buffer, model_state, text, output_buffer)
+    await asyncio.to_thread(generate_to_buffer, model_state, text, output_buffer, seed, temperature, lsd_steps)
     
     output_buffer.seek(0)
     data = output_buffer.read()

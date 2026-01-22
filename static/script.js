@@ -14,6 +14,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     const speedInput = document.getElementById('speed-input');
     const speedValue = document.getElementById('speed-value');
     const voiceUrlInput = document.getElementById('voice-url');
+    const seedInput = document.getElementById('seed-input');
+    const tempInput = document.getElementById('temp-input');
+    const tempValue = document.getElementById('temp-value');
+    const lsdInput = document.getElementById('lsd-input');
+    const lsdValue = document.getElementById('lsd-value');
 
     let selectedVoice = 'alba'; // Default
     let selectedFile = null;
@@ -150,6 +155,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     speedInput.addEventListener('input', updateSpeed);
 
+    // Advanced Options Control
+    tempInput.addEventListener('input', () => {
+        tempValue.textContent = tempInput.value;
+    });
+
+    lsdInput.addEventListener('input', () => {
+        lsdValue.textContent = lsdInput.value;
+    });
+
     // Generate
     generateBtn.addEventListener('click', async () => {
         const text = textInput.value.trim();
@@ -173,6 +187,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         } else if (selectedVoice) {
             formData.append('voice', selectedVoice);
         }
+
+        if (seedInput.value) {
+            formData.append('seed', seedInput.value);
+        }
+        formData.append('temperature', tempInput.value);
+        formData.append('lsd_steps', lsdInput.value);
 
         try {
             const res = await fetch(`${API_BASE}/generate`, {
