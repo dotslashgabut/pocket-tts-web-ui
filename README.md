@@ -39,7 +39,7 @@ chmod +x setup_env.sh
 ### Manual Installation
 1.  **Clone the repository**:
     ```bash
-    git clone https://github.com/your-username/pocket-tts-web-ui.git
+    git clone https://github.com/dotslashgabut/pocket-tts-web-ui.git
     cd pocket-tts-web-ui
     ```
 

@@ -1,8 +1,6 @@
 @echo off
 echo Setting up Virtual Environment...
 
-
-
 if not exist "venv" (
     echo Creating venv...
     python -m venv venv

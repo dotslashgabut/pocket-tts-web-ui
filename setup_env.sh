@@ -1,8 +1,6 @@
 #!/bin/bash
 echo "Setting up Virtual Environment..."
 
-
-
 if [ ! -d "venv" ]; then
     echo "Creating venv..."
     python3 -m venv venv
