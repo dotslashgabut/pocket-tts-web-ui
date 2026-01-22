@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const speedValue = document.getElementById('speed-value');
     const voiceUrlInput = document.getElementById('voice-url');
     const seedInput = document.getElementById('seed-input');
+    const randomSeedBtn = document.getElementById('random-seed-btn');
     const tempInput = document.getElementById('temp-input');
     const tempValue = document.getElementById('temp-value');
     const lsdInput = document.getElementById('lsd-input');
@@ -157,11 +158,18 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Advanced Options Control
     tempInput.addEventListener('input', () => {
-        tempValue.textContent = tempInput.value;
+        tempValue.textContent = parseFloat(tempInput.value).toFixed(2);
     });
 
     lsdInput.addEventListener('input', () => {
         lsdValue.textContent = lsdInput.value;
+    });
+
+    // Random Seed Button
+    randomSeedBtn.addEventListener('click', () => {
+        // Generate random 32-bit integer (approx)
+        const randomSeed = Math.floor(Math.random() * 4294967295);
+        seedInput.value = randomSeed;
     });
 
     // Generate
